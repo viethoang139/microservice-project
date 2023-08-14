@@ -4,6 +4,7 @@ import com.leviethoang.orderservice.dto.ApiResponse;
 import com.leviethoang.orderservice.dto.OrderDto;
 import com.leviethoang.orderservice.dto.ProductDto;
 import com.leviethoang.orderservice.entity.Order;
+import com.leviethoang.orderservice.exception.ResourceNotFoundException;
 import com.leviethoang.orderservice.repository.OrderRepository;
 import com.leviethoang.orderservice.service.APIClient;
 import com.leviethoang.orderservice.service.OrderService;
@@ -31,7 +32,7 @@ public class OrderServiceImpl implements OrderService {
     @CircuitBreaker(name ="${spring.application.name}" , fallbackMethod = "defaultResponse")
     @Override
     public ApiResponse getOrderById(Long id) {
-        Order order = orderRepository.findById(id).get();
+        Order order = orderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Order","ID",id));
 
         ProductDto productDto = apiClient.getProductById(order.getProductId());
 
@@ -44,7 +45,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     public ApiResponse defaultResponse(Long id , Exception exception) {
-        Order order = orderRepository.findById(id).get();
+        Order order = orderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Order","ID",id));
 
         ProductDto productDto = new ProductDto();
         productDto.setProductName("Default product name");
