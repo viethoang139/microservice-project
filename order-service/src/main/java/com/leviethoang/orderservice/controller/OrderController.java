@@ -4,6 +4,7 @@ import com.leviethoang.orderservice.dto.ApiResponse;
 import com.leviethoang.orderservice.dto.OrderDto;
 import com.leviethoang.orderservice.producer.OrderProducer;
 import com.leviethoang.orderservice.service.impl.OrderServiceImpl;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ public class OrderController {
     private final OrderProducer orderProducer;
 
     @PostMapping
-    public ResponseEntity<String> createOrder(@RequestBody OrderDto orderDto){
+    public ResponseEntity<String> createOrder(@RequestBody @Valid OrderDto orderDto){
         service.createOrder(orderDto);
         orderProducer.sendMessage(orderDto);
         return new ResponseEntity<>("Order successfully" , HttpStatus.CREATED);
